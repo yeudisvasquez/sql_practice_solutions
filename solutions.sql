@@ -202,6 +202,24 @@ WHERE a.admission_date = ( --Sub query
   WHERE a2.patient_id = p.patient_id
   );
 
+--Sort the province names in ascending order in such a way that the province 'Ontario' is always on top.
+SELECT province_name
+FROM province_names
+ORDER BY (
+  CASE
+  	WHEN province_name = 'Ontario' THEN 0 
+  	ELSE 1
+  END
+  );
 
-
-
+--We need a breakdown for the total amount of admissions each doctor has started each year. Show the doctor_id, doctor_full_name, specialty, year, total_admissions for that year.
+SELECT 
+    d.doctor_id, 
+ 	CONCAT(d.first_name, + " ", + d.last_name) AS doctor_name,
+    d.specialty,
+    YEAR(a.admission_date) AS selected_year,
+    COUNT(a.patient_id) AS total_admissions
+FROM doctors d
+	LEFT JOIN admissions a ON d.doctor_id = a.attending_doctor_id
+group by doctor_name, selected_year
+order by doctor_id;
